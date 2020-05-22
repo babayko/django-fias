@@ -44,6 +44,7 @@ name_trans = {
     'nordoc': 'normdoc',
     'housint': 'houseint',
     'addrob': 'addrobj',
+    'address_objects': 'addrobj',
 }
 
 

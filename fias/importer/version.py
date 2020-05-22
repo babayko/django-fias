@@ -9,17 +9,39 @@ from fias.config import PROXY
 from fias.importer.signals import pre_fetch_version, post_fetch_version
 from fias.models import Version
 
-wsdl_source = "http://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL"
+wsdl_source = "https://fias.nalog.ru/WebServices/Public/DownloadService.asmx?WSDL"
+
+
+def get_or_create_version(version_id, version_text):
+    dumpdate = datetime.datetime.strptime(version_text[-10:], "%d.%m.%Y").date()
+    version = Version.objects.filter(
+        ver=version_id,
+    ).first()
+
+    if version:
+        ver = version
+
+        if version.dumpdate < dumpdate:
+            version.dumpdate = dumpdate
+            version.save()
+            created = True
+        else:
+            created = False
+    else:
+        ver = Version.objects.create(
+            ver=version_id,
+            dumpdate=dumpdate,
+        )
+        created = True
+
+    return ver, created
 
 
 def parse_item_as_dict(item, update_all=False):
     """
     Разбор данных о версии как словаря
     """
-    ver, created = Version.objects.get_or_create(
-        ver=item['VersionId'],
-        dumpdate=datetime.datetime.strptime(item['TextVersion'][-10:], "%d.%m.%Y").date(),
-    )
+    ver, created = get_or_create_version(item['VersionId'], item['TextVersion'])
 
     if created or update_all:
         setattr(ver, 'complete_xml_url', item['FiasCompleteXmlUrl'])
@@ -42,10 +64,7 @@ def parse_item_as_object(item, update_all=False):
     """
     Разбор данных о версии, как объекта
     """
-    ver, created = Version.objects.get_or_create(
-        ver=item.VersionId,
-        dumpdate=datetime.datetime.strptime(item.TextVersion[-10:], "%d.%m.%Y").date(),
-    )
+    ver, created = get_or_create_version(item.VersionId, item.TextVersion)
 
     if created or update_all:
         setattr(ver, 'complete_xml_url', item.FiasCompleteXmlUrl)

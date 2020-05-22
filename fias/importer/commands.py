@@ -112,13 +112,17 @@ def update_data(path=None, version=None, skip=False, data_format='xml', limit=10
         if tbl not in tablelist.tables:
             continue
 
-        st = Status.objects.get(table=tbl)
-
-        if st.ver.ver >= tablelist.version.ver:
-            log.info('Update of the table `{0}` is not needed [{1} <= {2}]. Skipping...'.format(
-                tbl, st.ver.ver, tablelist.version.ver
-            ))
-            continue
+        try:
+            st = Status.objects.get(table=tbl)
+        except Status.DoesNotExist:
+            st = Status()
+            st.table = tbl
+        else:
+            if st.ver.ver >= tablelist.version.ver:
+                log.info('Update of the table `{0}` is not needed [{1} <= {2}]. Skipping...'.format(
+                    tbl, st.ver.ver, tablelist.version.ver
+                ))
+                continue
 
         for table in tablelist.tables[tbl]:
             loader = TableUpdater(limit=limit)
