@@ -8,7 +8,7 @@ from .dbf import DBFTable
 from .xml import XMLTable
 
 table_xml_prefix = 'as_'
-table_xml_pattern = r'(?P<deleted>del_)?(?P<name>[a-z]+)_(?P<date>\d+)_(?P<uuid>[a-z0-9-]{36}).xml'
+table_xml_pattern = r'(?P<deleted>del_)?(?P<name>[a-z_]+)_(?P<date>\d+)_(?P<uuid>[a-z0-9-]{36}).xml'
 table_dbf_pattern = r'(?P<deleted>D)?(?P<name>[a-z]+)(?P<seq>\d+)?.dbf'
 table_dbt_pattern = r'(?P<name>[a-z]+)(?P<seq>\d+)?.dbt'
 table_xml_re = re.compile(table_xml_prefix + table_xml_pattern, re.I)

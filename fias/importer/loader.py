@@ -178,8 +178,13 @@ class TableUpdater(TableLoader):
                 self.counter += 1
             else:
                 if not hasattr(item, 'updatedate') or old_obj.updatedate < item.updatedate:
-                    item.save()
-                    self.upd_counter += 1
+                    try:
+                        item.save()
+                    except Exception as e:
+                        print(item, e)
+                        self.err_counter += 1
+                    else:
+                        self.upd_counter += 1
 
             if self.counter and self.counter % self.limit == 0:
                 self.create(table, objects, bar=bar)
@@ -192,5 +197,5 @@ class TableUpdater(TableLoader):
         if objects:
             self.create(table, objects, bar=bar)
 
-        bar.update(loaded=self.counter, updated=self.upd_counter, skipped=self.skip_counter)
+        bar.update(loaded=self.counter, updated=self.upd_counter, skipped=self.skip_counter, errors=self.err_counter)
         bar.finish()

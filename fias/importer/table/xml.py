@@ -1,12 +1,12 @@
 # coding: utf-8
 from __future__ import unicode_literals, absolute_import
 
-import datetime
 from lxml import etree
 
 from django.db import models
 from fias.fields import UUIDField
 from .table import BadTableError, Table, TableIterator, ParentLookupException
+from ..parsers import datetime_parser
 
 _bom_header = b'\xef\xbb\xbf'
 
@@ -39,7 +39,7 @@ class XMLIterator(TableIterator):
             if key in self.uuid_fields:
                 yield (key, value or None)
             elif key in self.date_fields:
-                yield (key, datetime.datetime.strptime(value, "%Y-%m-%d").date())
+                yield (key, datetime_parser(value).date() if value else None)
             #elif key in self.related_fields:
             #    model = self.related_fields[key]
             #    try:

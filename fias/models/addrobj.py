@@ -34,8 +34,8 @@ class AddrObj(June2016Update):
     previd = UUIDField('Идентификатор записи связывания с предыдушей исторической записью', blank=True, null=True)
     nextid = UUIDField('Идентификатор записи  связывания с последующей исторической записью', blank=True, null=True)
 
-    formalname = models.CharField('Формализованное наименование', max_length=120, db_index=True)
-    offname = models.CharField('Официальное наименование', max_length=120, blank=True, null=True)
+    formalname = models.TextField('Формализованное наименование', db_index=True)
+    offname = models.TextField('Официальное наименование', blank=True, null=True)
     shortname = models.CharField('Краткое наименование типа объекта', max_length=10, db_index=True)
     aolevel = models.PositiveSmallIntegerField('Уровень адресного объекта', db_index=True)
 
@@ -59,10 +59,11 @@ class AddrObj(June2016Update):
                                  max_length=15, blank=True, null=True)
 
     actstatus = models.BooleanField('Статус исторической записи в жизненном цикле адресного объекта', default=False)
-    centstatus = models.ForeignKey(CenterSt, verbose_name='Статус центра', default=0)
-    operstatus = models.ForeignKey(OperStat, verbose_name='Статус действия над записью – причина появления записи', default=0)
+    centstatus = models.ForeignKey(CenterSt, verbose_name='Статус центра', default=0, on_delete=models.CASCADE)
+    operstatus = models.ForeignKey(OperStat, verbose_name='Статус действия над записью – причина появления записи',
+                                   default=0, on_delete=models.CASCADE)
     currstatus = models.ForeignKey(CurentSt, verbose_name='Статус актуальности КЛАДР 4',
-                                   help_text='последние две цифры в коде', default=0)
+                                   help_text='последние две цифры в коде', default=0, on_delete=models.CASCADE)
 
     livestatus = models.BooleanField('Признак действующего адресного объекта', default=False)
 

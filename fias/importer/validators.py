@@ -17,6 +17,7 @@ def addrobj_validator(item, today, **kwargs):
     return (
         not item.nextid and
         item.actstatus and
+        item.actstatus != '0' and
         common_validator(item, today=today, **kwargs)
     )
 
